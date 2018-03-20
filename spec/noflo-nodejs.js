@@ -54,6 +54,17 @@ describe('FBP Client with noflo-nodejs', () => {
       expect(client.definition.type).to.equal('noflo-nodejs');
     });
   });
+  describe('when connected', () => {
+    it('should be possible to query network status', () => {
+      return client.protocol.component.getsource({
+        name: client.definition.graph,
+      })
+        .then((res) => {
+          expect(`${res.library}/${res.name}`).to.equal(client.definition.graph);
+          expect(res.language).to.equal('json');
+        });
+    }).timeout(3000);
+  });
   describe('when disconnecting', () => {
     it('should be able to disconnect', () => {
       return client.disconnect();
