@@ -1,0 +1,33 @@
+{
+  "id": "/definition/",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "label": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "protocol": {
+      "type": "string"
+    },
+    "secret": {
+      "type": "string"
+    },
+    "allCapabilities": {
+      "$ref": "/shared/capabilities"
+    },
+    "capabilities": {
+      "$ref": "/shared/capabilities"
+    }
+  },
+  "required": ["address"],
+  "additionalProperties": true
+}
