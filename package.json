@@ -4,7 +4,7 @@
   "description": "Higher-level client library for the FBP protocol",
   "main": "index.js",
   "scripts": {
-    "pretest": "eslint *.js lib/*.js",
+    "pretest": "eslint *.js lib/*.js lib/adapter/*.js",
     "test": "mocha --reporter spec spec/*.js"
   },
   "repository": {
