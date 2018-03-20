@@ -8,7 +8,9 @@ describe('FBP Client', () => {
         return client({})
           .then(() => new Error('Unexpected success'))
           .catch((err) => {
-            expect(err.message).to.contain('address is required');
+            expect(err.message).to.contain('Runtime definition');
+            expect(err.message).to.contain('should have required');
+            expect(err.message).to.contain('address');
           });
       });
     });
