@@ -54,4 +54,12 @@ describe('FBP Client with noflo-nodejs', () => {
       expect(client.definition.type).to.equal('noflo-nodejs');
     });
   });
+  describe('when disconnecting', () => {
+    it('should be able to disconnect', () => {
+      return client.disconnect();
+    });
+    it('should be marked as disconnected', () => {
+      expect(client.isConnected()).to.not.equal(true);
+    });
+  });
 });
