@@ -1,4 +1,4 @@
-fbp-client [![Build Status](https://travis-ci.org/flowbased/fbp-client.svg?branch=master)](https://travis-ci.org/flowbased/fbp-client) [![Coverage Status](https://coveralls.io/repos/github/flowbased/fbp-client/badge.svg?branch=master)](https://coveralls.io/github/flowbased/fbp-client?branch=master)
+fbp-client [![Build Status](https://travis-ci.org/flowbased/fbp-client.svg?branch=master)](https://travis-ci.org/flowbased/fbp-client) [![Coverage Status](https://coveralls.io/repos/github/flowbased/fbp-client/badge.svg?branch=master)](https://coveralls.io/github/flowbased/fbp-client?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/flowbased/fbp-client.svg)](https://greenkeeper.io/)
 ==========
 
 This library provides a higher level client for interacting with [FBP Protocol](http://flowbased.github.io/fbp-protocol/) runtimes. Underneath it utilizes the transport abstractions provided by [fbp-protocol-client](https://github.com/flowbased/fbp-protocol-client).
