@@ -64,6 +64,18 @@ describe('FBP Client with noflo-nodejs', () => {
           expect(res.language).to.equal('json');
         });
     });
+    it('trying to add node to non-existing graph should fail', () => {
+      return client.protocol.graph.addnode({
+        id: 'foo',
+        component: 'bar',
+        graph: 'not-existing',
+      })
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err).to.be.an('error');
+          expect(err.message).to.contain('graph not found');
+        });
+    });
   });
   describe('when disconnecting', () => {
     it('should be able to disconnect', () => {
