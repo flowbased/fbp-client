@@ -6,6 +6,7 @@ describe('FBP Client', () => {
     describe('without address', () => {
       it('should give an error', () => {
         return client({})
+          .then(() => new Error('Unexpected success'))
           .catch((err) => {
             expect(err.message).to.contain('address is required');
           });
@@ -16,6 +17,7 @@ describe('FBP Client', () => {
         return client({
           address: 'smtp://localhost',
         })
+          .then(() => new Error('Unexpected success'))
           .catch((err) => {
             expect(err.message).to.contain('protocol is required');
           });
@@ -28,7 +30,7 @@ describe('FBP Client', () => {
             expect(c.definition.protocol).to.equal('websocket');
           });
       });
-      it('should convert address to protocol for https', () => {
+      it.skip('should convert address to protocol for https', () => {
         return client({
           address: 'https://noflojs.org',
         })
@@ -43,8 +45,37 @@ describe('FBP Client', () => {
           address: 'smtp://localhost',
           protocol: 'smtp',
         })
+          .then(() => new Error('Unexpected success'))
           .catch((err) => {
             expect(err.message).to.contain('Unsupported FBP transport');
+          });
+      });
+    });
+  });
+  describe('when connecting', () => {
+    describe('to non-existing local runtime', () => {
+      it('should time out when timeout is short', () => {
+        return client({
+          address: 'ws://localhost:3569',
+        }, {
+          connectionTimeout: 1,
+        })
+          .then((c) => c.connect())
+          .then(() => new Error('Unexpected success'))
+          .catch((err) => {
+            expect(err.message).to.contain('timed out');
+          });
+      });
+      it('should give actual connection error when not timing out', () => {
+        return client({
+          address: 'ws://localhost:3569',
+        }, {
+          connectionTimeout: 1000,
+        })
+          .then((c) => c.connect())
+          .then(() => new Error('Unexpected success'))
+          .catch((err) => {
+            expect(err.message).to.contain('ECONNREFUSED');
           });
       });
     });
