@@ -54,6 +54,32 @@ describe('FBP Client', () => {
       });
     });
   });
+  describe('before connecting', () => {
+    it('invalid command should fail validation', () => {
+      return client({
+        address: 'ws://localhost:3569',
+      })
+        .then((c) => c.protocol.network.getstatus({
+        }))
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err.message).to.contain('Client sent invalid');
+          expect(err.message).to.contain('graph');
+        });
+    });
+    it('should refuse to run commands', () => {
+      return client({
+        address: 'ws://localhost:3569',
+      })
+        .then((c) => c.protocol.network.getstatus({
+          graph: 'foo',
+        }))
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err.message).to.contain('must be connected');
+        });
+    });
+  });
   describe('when connecting', () => {
     describe('to non-existing local runtime', () => {
       it('should time out when timeout is short', () => {
