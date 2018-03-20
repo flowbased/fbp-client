@@ -55,7 +55,7 @@ describe('FBP Client with noflo-nodejs', () => {
     });
   });
   describe('when connected', () => {
-    it('should be possible to query network status', () => {
+    it('should be possible to get graph sources', () => {
       return client.protocol.component.getsource({
         name: client.definition.graph,
       })
@@ -63,7 +63,7 @@ describe('FBP Client with noflo-nodejs', () => {
           expect(`${res.library}/${res.name}`).to.equal(client.definition.graph);
           expect(res.language).to.equal('json');
         });
-    }).timeout(3000);
+    });
   });
   describe('when disconnecting', () => {
     it('should be able to disconnect', () => {
