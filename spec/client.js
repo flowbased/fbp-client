@@ -6,7 +6,7 @@ describe('FBP Client', () => {
     describe('without address', () => {
       it('should give an error', () => {
         return client({})
-          .then(() => new Error('Unexpected success'))
+          .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
             expect(err.message).to.contain('Runtime definition');
             expect(err.message).to.contain('should have required');
@@ -19,7 +19,7 @@ describe('FBP Client', () => {
         return client({
           address: 'smtp://localhost',
         })
-          .then(() => new Error('Unexpected success'))
+          .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
             expect(err.message).to.contain('protocol is required');
           });
@@ -47,7 +47,7 @@ describe('FBP Client', () => {
           address: 'smtp://localhost',
           protocol: 'smtp',
         })
-          .then(() => new Error('Unexpected success'))
+          .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
             expect(err.message).to.contain('Unsupported FBP transport');
           });
@@ -63,7 +63,7 @@ describe('FBP Client', () => {
           connectionTimeout: 1,
         })
           .then((c) => c.connect())
-          .then(() => new Error('Unexpected success'))
+          .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
             expect(err.message).to.contain('timed out');
           });
@@ -75,7 +75,7 @@ describe('FBP Client', () => {
           connectionTimeout: 1000,
         })
           .then((c) => c.connect())
-          .then(() => new Error('Unexpected success'))
+          .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
             expect(err.message).to.contain('ECONNREFUSED');
           });

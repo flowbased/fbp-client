@@ -23,7 +23,7 @@ describe('FBP Protocol message validation', () => {
         },
       };
       return validate('/runtime/input/packet', payload)
-        .then(() => new Error('Unexpected success'))
+        .then(() => { throw new Error('Unexpected success') })
         .catch((err) => {
           expect(err.message).to.contain('Client sent invalid');
           expect(err.message).to.contain('graph');
@@ -51,7 +51,7 @@ describe('FBP Protocol message validation', () => {
         },
       };
       return validate('/runtime/output/ports', payload)
-        .then(() => new Error('Unexpected success'))
+        .then(() => { throw new Error('Unexpected success') })
         .catch((err) => {
           expect(err.message).to.contain('Runtime sent invalid');
           expect(err.message).to.contain('graph');
