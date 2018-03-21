@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const { spawn } = require('child_process');
 const path = require('path');
 const fbpClient = require('../lib/client');
+const { Graph: fbpGraph } = require('fbp-graph');
 
 describe('FBP Client with noflo-nodejs', () => {
   let nofloNodejs = null;
@@ -114,6 +115,16 @@ exports.getComponent = () => noflo.asComponent(plusOne);
           expect(res.inPorts.length).to.equal(1);
           expect(res.outPorts.length).to.equal(2);
         });
+    });
+    it('should be possible to send a graph', () => {
+      const graph = new fbpGraph('hello');
+      graph.addNode('repeat', 'core/Repeat');
+      graph.addNode('plus', 'foo/PlusOne');
+      graph.addNode('output', 'core/Output');
+      graph.addEdge('repeat', 'out', 'plus', 'in');
+      graph.addEdge('plus', 'out', 'output', 'in');
+      graph.addInitial(1, 'repeat', 'in');
+      return client.protocol.graph.send(graph);
     });
   });
   describe('when disconnecting', () => {
