@@ -92,6 +92,30 @@ describe('FBP Client with noflo-nodejs', () => {
         });
     });
   });
+  describe('setting up a project', () => {
+    const componentName = 'foo/PlusOne';
+    it('should be possible to send a custom component', () => {
+      const code = `
+const noflo = require('noflo');
+const plusOne = function(val) {
+  return parseInt(val, 10) + 1;
+}
+exports.getComponent = () => noflo.asComponent(plusOne);
+      `;
+
+      return client.protocol.component.source({
+        name: 'PlusOne',
+        language: 'javascript',
+        library: 'foo',
+        code,
+      })
+        .then((res) => {
+          expect(res.name).to.equal(componentName);
+          expect(res.inPorts.length).to.equal(1);
+          expect(res.outPorts.length).to.equal(2);
+        });
+    });
+  });
   describe('when disconnecting', () => {
     it('should be able to disconnect', () => {
       return client.disconnect();
