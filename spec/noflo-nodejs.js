@@ -53,6 +53,14 @@ describe('FBP Client with noflo-nodejs', () => {
     it('should have updated runtime definition type', () => {
       expect(client.definition.type).to.equal('noflo-nodejs');
     });
+    it('should be able to connect again without side-effects', () => {
+      client.adapter.__spec = true;
+      return client.connect()
+        .then(() => {
+          expect(client.adapter.__spec).to.equal(true);
+          delete client.adapter.__spec;
+        });
+    });
   });
   describe('when connected', () => {
     it('should be possible to get graph sources', () => {
@@ -83,6 +91,14 @@ describe('FBP Client with noflo-nodejs', () => {
     });
     it('should be marked as disconnected', () => {
       expect(client.isConnected()).to.not.equal(true);
+    });
+    it('should be able to disconnect again without side-effects', () => {
+      client.adapter.__spec = true;
+      return client.disconnect()
+        .then(() => {
+          expect(client.adapter.__spec).to.equal(true);
+          delete client.adapter.__spec;
+        });
     });
   });
 });
