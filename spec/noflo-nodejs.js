@@ -127,9 +127,54 @@ exports.getComponent = () => noflo.asComponent(plusOne);
       graph.addInitial(1, 'repeat', 'in');
       return client.protocol.graph.send(graph);
     });
-    it('should be possible to start the graph', () => {
-      client.on('signal', (signal) => signals.push(signal));
-      return client.protocol.network.start({
+    it('should be possible to start the graph', (done) => {
+      const onSignal = (signal) => {
+        signals.push(signal);
+        // Wait for the network to finish
+        if (signal.protocol === 'network' && signal.command === 'stopped') {
+          client.removeListener('signal', onSignal);
+          done();
+        }
+      };
+      client.on('signal', onSignal);
+      client.protocol.network.start({
+        graph: 'one-plus-one',
+      })
+        .catch((err) => {
+          client.removeListener('signal', onSignal);
+          done();
+        });
+    });
+    it('should tell that the network has finished', () => {
+      return client.protocol.network.getstatus({
+        graph: 'one-plus-one',
+      })
+        .then((status) => {
+          expect(status.started).to.equal(false);
+          expect(status.running).to.equal(false);
+        });
+    });
+    it('should have emitted packet events as signals', () => {
+      const packets = signals.filter(s => (s.protocol === 'network' && s.command === 'data'));
+      expect(packets.length).to.equal(3);
+      // IIP
+      expect(packets[0].payload.src).to.be.an('undefined');
+      expect(packets[0].payload.data).to.equal('1');
+      // repeat -> plus
+      expect(packets[1].payload.src).to.eql({
+        node: 'repeat',
+        port: 'out',
+      });
+      expect(packets[1].payload.data).to.equal('1');
+      // repeat -> plus
+      expect(packets[2].payload.src).to.eql({
+        node: 'plus',
+        port: 'out',
+      });
+      expect(packets[2].payload.data).to.equal('2');
+    });
+    it('should be possible to stop', () => {
+      return client.protocol.network.stop({
         graph: 'one-plus-one',
       });
     });
