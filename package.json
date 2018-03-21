@@ -2,7 +2,7 @@
   "name": "fbp-client",
   "version": "0.1.0",
   "description": "Higher-level client library for the FBP protocol",
-  "main": "index.js",
+  "main": "lib/client.js",
   "scripts": {
     "pretest": "eslint *.js lib/*.js lib/adapter/*.js",
     "test": "nyc mocha --reporter spec spec/*.js"
