@@ -72,7 +72,7 @@ describe('FBP Client with noflo-nodejs', () => {
           expect(res.language).to.equal('json');
         });
     });
-    it('trying to add node to non-existing graph should fail', () => {
+    it('should fail when adding a node to a non-existing graph', () => {
       return client.protocol.graph.addnode({
         id: 'foo',
         component: 'bar',
@@ -82,6 +82,13 @@ describe('FBP Client with noflo-nodejs', () => {
         .catch((err) => {
           expect(err).to.be.an('error');
           expect(err.message).to.contain('graph not found');
+        });
+    });
+    it('should be possible to list components', () => {
+      return client.protocol.component.list()
+        .then((components) => {
+          expect(components).to.be.an('array');
+          expect(components.length).to.be.above(5);
         });
     });
   });
