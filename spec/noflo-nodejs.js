@@ -101,4 +101,18 @@ describe('FBP Client with noflo-nodejs', () => {
         });
     });
   });
+  describe('registering commands after being disconnected', () => {
+    after(() => {
+      return client.disconnect();
+    });
+    it('should process commands sent while offline after reconnected', (done) => {
+      client.protocol.component.getsource({
+        name: client.definition.graph,
+      })
+        .then(() => {
+          done();
+        }, done);
+      client.connect();
+    });
+  });
 });
