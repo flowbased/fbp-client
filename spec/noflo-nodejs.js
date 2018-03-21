@@ -95,6 +95,7 @@ describe('FBP Client with noflo-nodejs', () => {
   });
   describe('setting up a project', () => {
     const componentName = 'foo/PlusOne';
+    const signals = [];
     it('should be possible to send a custom component', () => {
       const code = `
 const noflo = require('noflo');
@@ -117,14 +118,20 @@ exports.getComponent = () => noflo.asComponent(plusOne);
         });
     });
     it('should be possible to send a graph', () => {
-      const graph = new fbpGraph('hello');
+      const graph = new fbpGraph('one-plus-one');
       graph.addNode('repeat', 'core/Repeat');
       graph.addNode('plus', 'foo/PlusOne');
       graph.addNode('output', 'core/Output');
-      graph.addEdge('repeat', 'out', 'plus', 'in');
+      graph.addEdge('repeat', 'out', 'plus', 'val');
       graph.addEdge('plus', 'out', 'output', 'in');
       graph.addInitial(1, 'repeat', 'in');
       return client.protocol.graph.send(graph);
+    });
+    it('should be possible to start the graph', () => {
+      client.on('signal', (signal) => signals.push(signal));
+      return client.protocol.network.start({
+        graph: 'one-plus-one',
+      });
     });
   });
   describe('when disconnecting', () => {
