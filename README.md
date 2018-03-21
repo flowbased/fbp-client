@@ -27,6 +27,7 @@ Create a client instance for a FBP Protocol runtime definition with:
 
 ```javascript
 const fbpClient = require('fbp-client');
+
 fbpClient({
   address: 'wss://localhost:3569',
   protocol: 'websocket',
