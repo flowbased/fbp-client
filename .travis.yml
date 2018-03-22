@@ -4,3 +4,11 @@ node_js:
 - lts/*
 after_success:
 - "./node_modules/.bin/nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls"
+deploy:
+  provider: npm
+  email: henri.bergius@iki.fi
+  api_key:
+    secure: vWmOaitjjKtVA2dtK96Gef65lZlgel1e7sRnI79nPhFIcWwb564ltwtU6YBnoE/zwHqTos99HJkx0TRabPLiaqxrEU2GIUk/ABf+BPEQmlyQzCcmTXrMTZYRlQArBCg8S6sECNYC1Lnl0FtBQMQAnW27FG81zb0/X1V+7TTaCAQDm5geAyVMD+4EF90gj2lGY5Onuzil0Ye6y2KxQ3hk5hguw5kcnWysbiJkwgmgUm5Yl0FDNLSVjivQRjVn2pT8+RpqYtAQTx+i1pkk+fhLLnathu4p7XkSXqR88cGjDUek5zkcNnR8x7Jjfn7VnJKslCraiIsYGZq3hZapMZiR9frilXd/ymiMiaOYJD3dmsJYqTJgRlK0fl8dxz/wJj5Q+Ba0vz6H/tn0+0QJidfFoMySgg1fTCSvCEwaxaKWoHUy6C6Y2UdhyqVEnBDxq2vOQzDEXLIySLCXyzUVXtcIvJtRSye6vV6qUITSGp9voWi8FPU/FSbaIS6YMtoCJz9WESGw50O1p8NikSaSTNa4UKFCcVOvkSwXa7l5+H+CyK9Kvwz1+x6IMtzgSWZOaJhCqYTLz51btBDTzLcNAtLGUYnginBLZHv01mmJsB8ZGFHz7ksz2k0V396gM4EfcVWtOYJOzmnOTTSx3xgpONXkUd+SqKUBowCSP0BuNp8Me/Y=
+  on:
+    tags: true
+    repo: flowbased/fbp-client
