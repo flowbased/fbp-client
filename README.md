@@ -80,5 +80,5 @@ Messages sent as responses to a request are not emitted as signals.
 
 ## Changes
 
-* 0.1.0 (git master)
-  - Initial version, support for FBP Protocol version 0.6 and earlier
+* 0.1.0 (2018-03-22)
+  - Initial version, support for FBP Protocol version 0.7 and earlier
