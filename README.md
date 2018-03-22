@@ -61,6 +61,23 @@ client.runtime.packet({
   });
 ```
 
+## Signals
+
+Events coming from the runtime that are not direct responses to requests made by user are considered to be "signals". To subscribe to all signals coming from the client, use:
+
+```javascript
+client.on('signal', signal => console.log(signal));
+```
+
+You can also subscribe to signals for only one particular subprotocol with:
+
+```javascript
+// Only listen to network protocol
+client.on('network', signal => console.log(signal));
+```
+
+Messages sent as responses to a request are not emitted as signals.
+
 ## Changes
 
 * 0.1.0 (git master)
