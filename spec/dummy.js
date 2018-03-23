@@ -174,6 +174,17 @@ describe('FBP Client with dummy runtime', () => {
           expect(err.message).to.contain('invalid payload for graph:clear');
         });
     });
+    it('should fail requests on timeout', () => {
+      return client.protocol.graph.clear({
+        id: 'foo',
+        name: 'Foo',
+      })
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err).to.be.an('error');
+          expect(err.message).to.contain('timed out');
+        });
+    });
     it('should succeed in sending packet without packetsent response', () => {
       return client.protocol.runtime.packet({
         graph: 'exported-plus-one',
