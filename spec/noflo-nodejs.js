@@ -252,7 +252,7 @@ exports.getComponent = () => {
     let observer = null;
     it('should be possible to send a graph', () => {
       const graph = new fbpGraph('exported-plus-one');
-      graph.addNode('repeat', 'core/Repeat');
+      graph.addNode('repeat', 'core/RepeatAsync');
       graph.addNode('plus', 'foo/PlusOne');
       graph.addEdge('repeat', 'out', 'plus', 'val');
       graph.addInport('in', 'repeat', 'in');
