@@ -107,6 +107,9 @@ It is possible to see the internal workings of the library by setting the `DEBUG
 
 ## Changes
 
+* 0.2.1 (2018-03-23)
+  - Observer `until` also fails on protocol validation errors
+  - Clearer observer error messages on error packets
 * 0.2.0 (2018-03-23)
   - Added support for promisified signal observation
   - Added debugging support via the [debug](https://www.npmjs.com/package/debug) module
