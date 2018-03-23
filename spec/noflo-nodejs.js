@@ -170,6 +170,28 @@ exports.getComponent = () => noflo.asComponent(plusOne);
       });
     });
   });
+  describe('when creating graph with missing components', () => {
+    it('should be possible to send a graph', () => {
+      const graph = new fbpGraph('one-plus-two');
+      graph.addNode('repeat', 'core/Repeat');
+      graph.addNode('plus', 'foo/PlusTwo');
+      graph.addNode('output', 'core/Output');
+      graph.addEdge('repeat', 'out', 'plus', 'val');
+      graph.addEdge('plus', 'out', 'output', 'in');
+      graph.addInitial(1, 'repeat', 'in');
+      return client.protocol.graph.send(graph);
+    });
+    it('should be possible to start the graph', () => {
+      return client.protocol.network.start({
+        graph: 'one-plus-two',
+      })
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err).to.be.an('error');
+          expect(err.message).to.contain('Component foo/PlusTwo not available');
+        });
+    });
+  });
   describe('when creating graph with exported ports', () => {
     let observer = null;
     it('should be possible to send a graph', () => {
