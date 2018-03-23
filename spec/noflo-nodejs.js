@@ -16,6 +16,7 @@ describe('FBP Client with noflo-nodejs', () => {
       '--host=localhost',
       '--port=3570',
       '--secret=fbp-client',
+      '--open=false',
       `--base-dir=${baseDir}`,
     ]);
     nofloNodejs.stdout.on('data', (data) => {
