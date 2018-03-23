@@ -124,7 +124,7 @@ exports.getComponent = () => noflo.asComponent(plusOne);
       graph.addEdge('repeat', 'out', 'plus', 'val');
       graph.addEdge('plus', 'out', 'output', 'in');
       graph.addInitial(1, 'repeat', 'in');
-      return client.protocol.graph.send(graph);
+      return client.protocol.graph.send(graph, true);
     });
     it('should be possible to start the graph', () => {
       const observer = client.observe(['network:*']);
@@ -179,7 +179,7 @@ exports.getComponent = () => noflo.asComponent(plusOne);
       graph.addEdge('repeat', 'out', 'plus', 'val');
       graph.addEdge('plus', 'out', 'output', 'in');
       graph.addInitial(1, 'repeat', 'in');
-      return client.protocol.graph.send(graph);
+      return client.protocol.graph.send(graph, true);
     });
     it('should be possible to start the graph', () => {
       return client.protocol.network.start({
@@ -229,7 +229,7 @@ exports.getComponent = () => {
       graph.addEdge('repeat', 'out', 'plus', 'in');
       graph.addEdge('plus', 'out', 'output', 'in');
       graph.addInitial(1, 'repeat', 'in');
-      return client.protocol.graph.send(graph);
+      return client.protocol.graph.send(graph, true);
     });
     it('should be possible to start the graph', () => {
       observer = client.observe((signal) => signal.protocol === 'network' && signal.payload.graph === 'one-plus-three');
