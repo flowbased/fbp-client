@@ -1,6 +1,6 @@
 {
   "name": "fbp-client",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Higher-level client library for the FBP protocol",
   "main": "lib/client.js",
   "scripts": {

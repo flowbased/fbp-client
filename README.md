@@ -107,6 +107,9 @@ It is possible to see the internal workings of the library by setting the `DEBUG
 
 ## Changes
 
+* 0.2.2 (2018-03-24)
+  - Fixed observer `until` failure handling on protocol validation errors
+  - Improved test coverage
 * 0.2.1 (2018-03-23)
   - Observer `until` also fails on protocol validation errors
   - Clearer observer error messages on error packets
