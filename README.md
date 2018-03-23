@@ -78,6 +78,31 @@ client.on('network', signal => console.log(signal));
 
 Messages sent as responses to a request are not emitted as signals.
 
+It is also possible to work with signals in a promisifed way by using observers:
+
+```javascript
+// Register observer for all network events
+const observer client.observe(['network:*']);
+// Start the network
+client.network.start({
+  graph: 'my-graph',
+})
+  .then(() => {
+    // Receive all network signals on stopped, or failure with errors
+    return observer.until(['network:stopped'], ['network:error', 'network:processerror']);
+  });
+```
+
+## Debugging
+
+It is possible to see the internal workings of the library by setting the `DEBUG` environment variable to one or multiple of the following:
+
+* `fbp-client:adapter:signal`: Signals received by the runtime
+* `fbp-client:adapter:request`: Requests sent to the runtime
+* `fbp-client:adapter:response`: Responses received by the runtime
+* `fbp-client:observer`: Observer results
+* `fbp-client:observer:ignored`: Signals ignored by an observer
+
 ## Changes
 
 * 0.1.0 (2018-03-22)
