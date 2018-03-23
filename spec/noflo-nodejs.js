@@ -192,6 +192,61 @@ exports.getComponent = () => noflo.asComponent(plusOne);
         });
     });
   });
+  describe('when creating graph with crashing component', () => {
+    let observer = null;
+    it('should be possible to send a custom component', () => {
+      const code = `
+const noflo = require('noflo');
+exports.getComponent = () => {
+  const c = new noflo.Component();
+  c.inPorts.add('in');
+  c.outPorts.add('out');
+  c.process((input, output) => {
+    // Typo here on purpose
+    inpts.hasData('foo');
+  });
+  return c;
+};
+      `;
+
+      return client.protocol.component.source({
+        name: 'PlusThree',
+        language: 'javascript',
+        library: 'foo',
+        code,
+      })
+        .then((res) => {
+          expect(res.name).to.equal('foo/PlusThree');
+          expect(res.inPorts.length).to.equal(1);
+          expect(res.outPorts.length).to.equal(1);
+        });
+    });
+    it('should be possible to send a graph', () => {
+      const graph = new fbpGraph('one-plus-three');
+      graph.addNode('repeat', 'core/Repeat');
+      graph.addNode('plus', 'foo/PlusThree');
+      graph.addNode('output', 'core/Output');
+      graph.addEdge('repeat', 'out', 'plus', 'in');
+      graph.addEdge('plus', 'out', 'output', 'in');
+      graph.addInitial(1, 'repeat', 'in');
+      return client.protocol.graph.send(graph);
+    });
+    it('should be possible to start the graph', () => {
+      observer = client.observe((signal) => signal.protocol === 'network' && signal.payload.graph === 'one-plus-three');
+      return client.protocol.network.start({
+        graph: 'one-plus-three',
+      });
+    });
+    it('should register failure in observer', () => {
+      return observer.until(['network:stopped'], ['network:error', 'network:processerror'])
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err).to.be.an('error');
+          expect(err.message).to.contain('inpts is not defined');
+          expect(err.signature).to.equal('network:processerror');
+        });
+    });
+  });
   describe('when creating graph with exported ports', () => {
     let observer = null;
     it('should be possible to send a graph', () => {
