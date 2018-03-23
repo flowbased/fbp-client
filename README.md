@@ -50,7 +50,7 @@ client.connect()
 Send protocol messages:
 
 ```javascript
-client.runtime.packet({
+client.protocol.runtime.packet({
   graph: 'some-graph-id',
   port: 'in',
   event: 'data',
@@ -78,13 +78,15 @@ client.on('network', signal => console.log(signal));
 
 Messages sent as responses to a request are not emitted as signals.
 
+### Observers
+
 It is also possible to work with signals in a promisifed way by using observers:
 
 ```javascript
 // Register observer for all network events
 const observer client.observe(['network:*']);
 // Start the network
-client.network.start({
+client.protocol.network.start({
   graph: 'my-graph',
 })
   .then(() => {
