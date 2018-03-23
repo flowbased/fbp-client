@@ -94,7 +94,7 @@ describe('FBP Client with noflo-nodejs', () => {
     });
   });
   describe('setting up a project', () => {
-    const signals = [];
+    let signals = [];
     it('should be possible to send a custom component', () => {
       const code = `
 const noflo = require('noflo');
@@ -126,22 +126,14 @@ exports.getComponent = () => noflo.asComponent(plusOne);
       graph.addInitial(1, 'repeat', 'in');
       return client.protocol.graph.send(graph);
     });
-    it('should be possible to start the graph', (done) => {
-      const onSignal = (signal) => {
-        signals.push(signal);
-        // Wait for the network to finish
-        if (signal.protocol === 'network' && signal.command === 'stopped') {
-          client.removeListener('signal', onSignal);
-          done();
-        }
-      };
-      client.on('signal', onSignal);
-      client.protocol.network.start({
+    it('should be possible to start the graph', () => {
+      const observer = client.observe(['network:*']);
+      return client.protocol.network.start({
         graph: 'one-plus-one',
       })
-        .catch((err) => {
-          client.removeListener('signal', onSignal);
-          done(err);
+        .then(() => observer.until(['network:stopped'], ['network:error', 'network:processerror']))
+        .then((s) => {
+          signals = s;
         });
     });
     it('should tell that the network has finished', () => {
@@ -179,7 +171,7 @@ exports.getComponent = () => noflo.asComponent(plusOne);
     });
   });
   describe('when creating graph with exported ports', () => {
-    const signals = [];
+    let observer = null;
     it('should be possible to send a graph', () => {
       const graph = new fbpGraph('exported-plus-one');
       graph.addNode('repeat', 'core/Repeat');
@@ -190,48 +182,29 @@ exports.getComponent = () => noflo.asComponent(plusOne);
       graph.addOutport('error', 'plus', 'error');
       return client.protocol.graph.send(graph, true);
     });
-    it('starting the graph should expose its ports', (done) => {
-      const onSignal = (signal) => {
-        signals.push(signal);
-        if (signal.protocol === 'runtime' && signal.command === 'ports' && signal.payload.graph === 'exported-plus-one') {
-          client.removeListener('signal', onSignal);
-          done();
-        }
-      };
-      client.on('signal', onSignal);
-      client.protocol.network.start({
+    it('starting the graph should expose its ports', () => {
+      const obs = client.observe(['runtime:ports']);
+      return client.protocol.network.start({
         graph: 'exported-plus-one',
       })
-        .catch((err) => {
-          client.removeListener('signal', onSignal);
-          done(err);
-        });
+        .then(() => obs.until((s) => s.payload.graph === 'exported-plus-one', []));
     });
-    it('should be possible to send a packet', (done) => {
-      const onSignal = (signal) => {
-        signals.push(signal);
-        if (signal.protocol === 'runtime' && signal.command === 'packet') {
-          client.removeListener('signal', onSignal);
-          done();
-        }
-      };
-      client.on('signal', onSignal);
-      client.protocol.runtime.packet({
+    it('should be possible to send a packet', () => {
+      observer = client.observe(['runtime:packet']);
+      return client.protocol.runtime.packet({
         graph: 'exported-plus-one',
         event: 'data',
         port: 'in',
         payload: 1,
-      })
-        .catch((err) => {
-          client.removeListener('signal', onSignal);
-          done(err);
-        });
+      });
     });
-    it('should have resulted in an output packet', () => {
-      const packets = signals.filter(s => (s.protocol === 'runtime' && s.command === 'packet'));
-      expect(packets.length).to.equal(1);
-      expect(packets[0].payload.port).to.equal('out');
-      expect(packets[0].payload.payload).to.equal(2);
+    it('should result in an output packet', () => {
+      return observer.until(['runtime:packet'], [])
+        .then((packets) => {
+          expect(packets.length).to.equal(1);
+          expect(packets[0].payload.port).to.equal('out');
+          expect(packets[0].payload.payload).to.equal(2);
+        });
     });
     it('it should be possible to stop the network', () => {
       return client.protocol.network.stop({
