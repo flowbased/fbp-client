@@ -171,6 +171,65 @@ exports.getComponent = () => noflo.asComponent(plusOne);
       });
     });
   });
+  describe('setting up a project with a failing component', () => {
+    let observerResult = null;
+    it('should be possible to send a custom component', () => {
+      const code = `
+const noflo = require('noflo');
+exports.getComponent = () => {
+  const c = new noflo.Component();
+  c.inPorts.add('in');
+  c.outPorts.add('out');
+  c.outPorts.add('error');
+  c.process((input, output) => {
+    const data = input.getData('in');
+    setTimeout(() => {
+      output.done(new Error('Unexpected data ' + data));
+    }, 1);
+  });
+  return c;
+};
+      `;
+
+      return client.protocol.component.source({
+        name: 'Errorer',
+        language: 'javascript',
+        library: 'foo',
+        code,
+      })
+        .then((res) => {
+          expect(res.name).to.equal('foo/Errorer');
+          expect(res.inPorts.length).to.equal(1);
+          expect(res.outPorts.length).to.equal(2);
+        });
+    });
+    it('should be possible to send a graph', () => {
+      const graph = new fbpGraph('one-plus-error');
+      graph.addNode('repeat', 'core/Repeat');
+      graph.addNode('plus', 'foo/Errorer');
+      graph.addNode('output', 'core/Output');
+      graph.addEdge('repeat', 'out', 'plus', 'in');
+      graph.addEdge('plus', 'out', 'output', 'in');
+      graph.addEdge('plus', 'error', 'output', 'in');
+      graph.addInitial(1, 'repeat', 'in');
+      return client.protocol.graph.send(graph, true);
+    });
+    it('should be possible to start the graph', () => {
+      observer = client.observe(['network:*']);
+      return client.protocol.network.start({
+        graph: 'one-plus-error',
+      })
+        .then(() => observer.until(['network:stopped'], (s) => s.protocol === 'network' && s.command === 'data' && s.payload.src && s.payload.src.port === 'error'))
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          observerResult = err;
+        });
+    });
+    it('should fail the observer with a readable error', () => {
+      expect(observerResult).to.be.an('error');
+      expect(observerResult.message).to.contain('Unexpected data 1');
+    });
+  });
   describe('when creating graph with missing components', () => {
     it('should be possible to send a graph', () => {
       const graph = new fbpGraph('one-plus-two');
