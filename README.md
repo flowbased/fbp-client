@@ -107,6 +107,11 @@ It is possible to see the internal workings of the library by setting the `DEBUG
 
 ## Changes
 
+* 0.3.0 (2018-03-26)
+  - Added support for checking capabilities.
+  - Disallowed messages cause requests to be rejected
+  - Disallowed signals trigger protocol error
+  - Permission checking can be disabled with `skipPermissions: true` option
 * 0.2.2 (2018-03-24)
   - Fixed observer `until` failure handling on protocol validation errors
   - Improved test coverage
