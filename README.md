@@ -107,6 +107,8 @@ It is possible to see the internal workings of the library by setting the `DEBUG
 
 ## Changes
 
+* 0.3.1 (2018-03-26)
+  - Added `connected` and `disconnected` events
 * 0.3.0 (2018-03-26)
   - Added support for checking capabilities.
   - Disallowed messages cause requests to be rejected
