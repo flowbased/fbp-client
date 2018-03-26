@@ -295,6 +295,7 @@ describe('FBP Client with dummy runtime', () => {
         secret: '',
       }, {
         skipPermissions: true,
+        commandTimeout: 100,
       })
         .then((c) => {
           client = c;
@@ -315,6 +316,19 @@ describe('FBP Client with dummy runtime', () => {
         port: 'in',
         payload: 1,
       })
+    });
+    it('should time out if there is no packetsent', () => {
+      return client.protocol.runtime.packet({
+        graph: 'exported-plus-one',
+        event: 'data',
+        port: 'in',
+        payload: 1,
+      })
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err).to.be.an('error');
+          expect(err.message).to.contain('timed out');
+        });
     });
     it('should fail observer on pre-existing messages not covered by capability', () => {
       const observer = client.observe(['runtime:*']);
