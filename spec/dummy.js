@@ -197,4 +197,176 @@ describe('FBP Client with dummy runtime', () => {
       return client.disconnect();
     });
   });
+  describe('with valid 0.7 runtime and limited capabilities', () => {
+    let client = null;
+    it('should be able to connect', () => {
+      runtime.once('message', (msg) => {
+        if (msg.protocol === 'runtime' && msg.command === 'getruntime') {
+          runtime.send('runtime', 'runtime', {
+            type: 'foo',
+            version: '0.7',
+            capabilities: [
+              'protocol:graph',
+              'network:control',
+            ],
+          });
+        }
+      });
+      return fbpClient({
+        address: 'ws://localhost:3671',
+        secret: '',
+      })
+        .then((c) => {
+          client = c;
+          return c.connect();
+        });
+    });
+    it('should succeed in sending packet', () => {
+      return client.protocol.runtime.packet({
+        graph: 'exported-plus-one',
+        event: 'data',
+        port: 'in',
+        payload: 1,
+      })
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err).to.be.an('error');
+          expect(err.message).to.contain('Not permitted to send');
+        });
+    });
+    it('should fail observer on pre-existing messages not covered by capability', () => {
+      const observer = client.observe(['runtime:*']);
+      runtime.send('runtime', 'packet', {
+        graph: 'exported-plus-one',
+        event: 'data',
+        port: 'in',
+        payload: 1,
+      });
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 10);
+      })
+        .then(() => observer.until([], []))
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err).to.be.an('error');
+          expect(err.message).to.contain('Not permitted to receive');
+        });
+    });
+    it('should fail observer on newly-arriving messages not covered by capability', () => {
+      const observer = client.observe(['runtime:*']);
+      setTimeout(() => {
+        runtime.send('runtime', 'packet', {
+          graph: 'exported-plus-one',
+          event: 'data',
+          port: 'in',
+          payload: 1,
+        });
+      }, 10);
+      return observer.until([], [])
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err).to.be.an('error');
+          expect(err.message).to.contain('Not permitted to receive');
+        });
+    });
+    it('should be able to disconnect', () => {
+      return client.disconnect();
+    });
+  });
+  describe('with valid 0.7 runtime and limited capabilities, skipPermissions=true', () => {
+    let client = null;
+    it('should be able to connect', () => {
+      runtime.once('message', (msg) => {
+        if (msg.protocol === 'runtime' && msg.command === 'getruntime') {
+          runtime.send('runtime', 'runtime', {
+            type: 'foo',
+            version: '0.7',
+            capabilities: [
+              'protocol:graph',
+              'network:control',
+            ],
+          });
+        }
+      });
+      return fbpClient({
+        address: 'ws://localhost:3671',
+        secret: '',
+      }, {
+        skipPermissions: true,
+        commandTimeout: 100,
+      })
+        .then((c) => {
+          client = c;
+          return c.connect();
+        });
+    });
+    it('should succeed in sending packet', () => {
+      runtime.once('message', (msg) => {
+        if (msg.protocol === 'runtime' && msg.command === 'packet') {
+          const packet = JSON.parse(JSON.stringify(msg.payload));
+          delete packet.secret;
+          runtime.send('runtime', 'packetsent', packet);
+        }
+      });
+      return client.protocol.runtime.packet({
+        graph: 'exported-plus-one',
+        event: 'data',
+        port: 'in',
+        payload: 1,
+      })
+    });
+    it('should time out if there is no packetsent', () => {
+      return client.protocol.runtime.packet({
+        graph: 'exported-plus-one',
+        event: 'data',
+        port: 'in',
+        payload: 1,
+      })
+        .then(() => { throw new Error('Unexpected success') })
+        .catch((err) => {
+          expect(err).to.be.an('error');
+          expect(err.message).to.contain('timed out');
+        });
+    });
+    it('should fail observer on pre-existing messages not covered by capability', () => {
+      const observer = client.observe(['runtime:*']);
+      runtime.send('runtime', 'packet', {
+        graph: 'exported-plus-one',
+        event: 'data',
+        port: 'in',
+        payload: 1,
+      });
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 10);
+      })
+        .then(() => observer.until(['runtime:packet'], []))
+        .then((packets) => {
+          expect(packets).to.be.an('array');
+          expect(packets.length).to.equal(1);
+        });
+    });
+    it('should fail observer on newly-arriving messages not covered by capability', () => {
+      const observer = client.observe(['runtime:*']);
+      setTimeout(() => {
+        runtime.send('runtime', 'packet', {
+          graph: 'exported-plus-one',
+          event: 'data',
+          port: 'in',
+          payload: 1,
+        });
+      }, 10);
+      return observer.until(['runtime:packet'], [])
+        .then((packets) => {
+          expect(packets).to.be.an('array');
+          expect(packets.length).to.equal(1);
+        });
+    });
+    it('should be able to disconnect', () => {
+      return client.disconnect();
+    });
+  });
 });
