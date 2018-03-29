@@ -103,6 +103,27 @@ describe('FBP Client with dummy runtime', () => {
         });
     });
   });
+  describe('with invalid runtime payload and skipValidation=true', () => {
+    it('should be able to connect', () => {
+      runtime.once('message', (msg) => {
+        if (msg.protocol === 'runtime' && msg.command === 'getruntime') {
+          runtime.send('runtime', 'runtime', {
+            type: 'foo',
+            version: '0.4',
+            baz: 'bar',
+          });
+        }
+      });
+      return fbpClient({
+        address: 'ws://localhost:3671',
+        secret: '',
+      }, {
+        skipValidation: true
+      })
+        .then((c) => c.connect().then(() => Promise.resolve(c)))
+        .then((c) => c.disconnect())
+    });
+  });
   describe('with valid 0.6 runtime and full capabilities', () => {
     let client = null;
     it('should be able to connect', () => {
