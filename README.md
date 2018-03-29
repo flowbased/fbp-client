@@ -107,6 +107,10 @@ It is possible to see the internal workings of the library by setting the `DEBUG
 
 ## Changes
 
+* 0.3.2 (2018-03-29)
+  - Schema validation can be disabled with `skipValidation: true` option. Validation failures still cause `protocolError` events to be emitted but not longer fail requests or observers
+  - When sending graphs, the graph `library` property will be preferred as the library name
+  - `disconnected` event will fire also if the connection is lost by other means that calling `disconnect()`
 * 0.3.1 (2018-03-26)
   - Added `connected` and `disconnected` events
 * 0.3.0 (2018-03-26)
