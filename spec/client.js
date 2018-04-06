@@ -8,6 +8,7 @@ describe('FBP Client', () => {
         return client({})
           .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
+            expect(err).to.be.an('error');
             expect(err.message).to.contain('Runtime definition');
             expect(err.message).to.contain('should have required');
             expect(err.message).to.contain('address');
@@ -21,6 +22,7 @@ describe('FBP Client', () => {
         })
           .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
+            expect(err).to.be.an('error');
             expect(err.message).to.contain('protocol is required');
           });
       });
@@ -49,6 +51,7 @@ describe('FBP Client', () => {
         })
           .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
+            expect(err).to.be.an('error');
             expect(err.message).to.contain('Unsupported FBP transport');
           });
       });
@@ -63,6 +66,7 @@ describe('FBP Client', () => {
         }))
         .then(() => { throw new Error('Unexpected success') })
         .catch((err) => {
+          expect(err).to.be.an('error');
           expect(err.message).to.contain('Client sent invalid');
           expect(err.message).to.contain('graph');
         });
@@ -76,6 +80,7 @@ describe('FBP Client', () => {
         }))
         .then(() => { throw new Error('Unexpected success') })
         .catch((err) => {
+          expect(err).to.be.an('error');
           expect(err.message).to.contain('must be connected');
         });
     });
@@ -91,6 +96,7 @@ describe('FBP Client', () => {
           .then((c) => c.connect())
           .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
+            expect(err).to.be.an('error');
             expect(err.message).to.contain('timed out');
           });
       });
@@ -103,6 +109,7 @@ describe('FBP Client', () => {
           .then((c) => c.connect())
           .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
+            expect(err).to.be.an('error');
             expect(err.message).to.contain('ECONNREFUSED');
           });
       });
