@@ -107,6 +107,8 @@ It is possible to see the internal workings of the library by setting the `DEBUG
 
 ## Changes
 
+* 0.4.1 (2020-09-01)
+  - Updated fbp-protocol schemas to the latest versions
 * 0.4.0 (2019-02-26)
   - `graph.properties.project` is no longer sent as the graph's "library identifier"
 * 0.3.3 (2018-04-06)
