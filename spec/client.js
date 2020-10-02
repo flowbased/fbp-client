@@ -110,7 +110,7 @@ describe('FBP Client', () => {
           .then(() => { throw new Error('Unexpected success') })
           .catch((err) => {
             expect(err).to.be.an('error');
-            expect(err.message).to.contain('ECONNREFUSED');
+            expect(err.message).to.contain('Connection failed');
           });
       });
     });
