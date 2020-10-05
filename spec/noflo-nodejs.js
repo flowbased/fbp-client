@@ -231,7 +231,7 @@ exports.getComponent = () => {
     });
   });
   describe('when creating graph with missing components', () => {
-    it('should be possible to send a graph', () => {
+    it('sending the graph should fail', () => {
       const graph = new fbpGraph('one-plus-two');
       graph.addNode('repeat', 'core/Repeat');
       graph.addNode('plus', 'foo/PlusTwo');
@@ -239,12 +239,7 @@ exports.getComponent = () => {
       graph.addEdge('repeat', 'out', 'plus', 'val');
       graph.addEdge('plus', 'out', 'output', 'in');
       graph.addInitial(1, 'repeat', 'in');
-      return client.protocol.graph.send(graph, true);
-    });
-    it('should be possible to start the graph', () => {
-      return client.protocol.network.start({
-        graph: 'one-plus-two',
-      })
+      return client.protocol.graph.send(graph, true)
         .then(() => { throw new Error('Unexpected success') })
         .catch((err) => {
           expect(err).to.be.an('error');
@@ -309,23 +304,25 @@ exports.getComponent = () => {
   });
   describe('when creating graph with exported ports', () => {
     let observer = null;
-    it('should be possible to send a graph', () => {
+    it('starting the graph should expose its ports', () => {
       const graph = new fbpGraph('exported-plus-one');
+      graph.setProperties({
+        main: true,
+      });
       graph.addNode('repeat', 'core/RepeatAsync');
       graph.addNode('plus', 'foo/PlusOne');
       graph.addEdge('repeat', 'out', 'plus', 'val');
       graph.addInport('in', 'repeat', 'in');
       graph.addOutport('out', 'plus', 'out');
       graph.addOutport('error', 'plus', 'error');
-      return client.protocol.graph.send(graph, true);
-    });
-    it('starting the graph should expose its ports', () => {
       const obs = client.observe(['runtime:ports']);
-      return client.protocol.network.start({
-        graph: 'exported-plus-one',
-      })
+      return client.protocol.graph.send(graph, true)
         .then(() => obs.until((s) => s.payload.graph === 'exported-plus-one', []));
     });
+    it('should be possible to start the graph', () => client
+      .protocol.network.start({
+        graph: 'exported-plus-one',
+      }));
     it('should be possible to send a packet', () => {
       observer = client.observe(['runtime:packet']);
       return client.protocol.runtime.packet({
