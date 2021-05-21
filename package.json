@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/flowbased/fbp-client#readme",
   "dependencies": {
-    "ajv": "^6.12.5",
+    "ajv": "^8.5.0",
     "debug": "^4.1.1",
     "fbp-protocol": "^0.9.7",
     "fbp-protocol-client": "^0.3.3"
